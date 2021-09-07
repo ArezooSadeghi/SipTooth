@@ -124,7 +124,8 @@
                 android:src="@drawable/square_close"
                 app:layout_constraintBottom_toBottomOf="@id/btn_eight"
                 app:layout_constraintStart_toEndOf="@id/btn_eight"
-                app:layout_constraintTop_toTopOf="@id/btn_eight" />
+                app:layout_constraintTop_toTopOf="@id/btn_eight"
+                app:tint="@color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

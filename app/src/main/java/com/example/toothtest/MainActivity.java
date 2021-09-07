@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatWindowBinding floatWindowBinding;
     private ToothBinding toothBinding;
     private WindowManager.LayoutParams layoutParams;
-    private float lastX, lastY;
     private static int TYPE;
 
     private static final int REQUEST_CODE = 0;
@@ -98,10 +98,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MotionEvent.ACTION_MOVE:
                         view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();
-                        lastX = (int) (event.getRawX() + xCoordinate);
-                        lastY = (int) (event.getRawY() + yCoordinate);
                         break;
                 }
+
                 return true;
             }
         });
@@ -142,18 +141,15 @@ public class MainActivity extends AppCompatActivity {
                 false);
 
         layoutParams = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        layoutParams.x = (int) lastX;
-        layoutParams.y = (int) lastY;
-        /*        layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;*/
+        layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
 
         windowManager.addView(floatWindowBinding.getRoot(), layoutParams);
 
@@ -196,10 +192,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        /* view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();*/
-                        layoutParams.x = (int) (event.getRawX() + xCoordinate);
-                        layoutParams.y = (int) (event.getRawY() + yCoordinate);
-                        windowManager.updateViewLayout(floatWindowBinding.getRoot(), layoutParams);
+                        view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();
                         break;
                 }
                 return true;
