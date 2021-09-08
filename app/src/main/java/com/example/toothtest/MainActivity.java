@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private WindowManager windowManager;
     private FloatWindowBinding floatWindowBinding;
     private ToothBinding toothBinding;
-    private WindowManager.LayoutParams layoutParams;
+    private WindowManager.LayoutParams windowParams;
     private static int TYPE;
 
     private static final int REQUEST_CODE = 0;
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                         view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();
                         break;
                 }
-
                 return true;
             }
         });
@@ -109,8 +107,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean canDrawOverlay() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             return Settings.canDrawOverlays(this);
+        } else {
+            if (Settings.canDrawOverlays(this)) {
+                return true;
+            }
         }
         return false;
     }
@@ -140,18 +142,22 @@ public class MainActivity extends AppCompatActivity {
                 null,
                 false);
 
-        layoutParams = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                TYPE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-
-        layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-
+        int w = WindowManager.LayoutParams.WRAP_CONTENT;
+        int h = WindowManager.LayoutParams.WRAP_CONTENT;
+        int xpos = 0;
+        int ypos = 0;
+        int _type;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            _type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            _type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+        int _flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        int _format = PixelFormat.TRANSLUCENT;
+        windowParams = new WindowManager.LayoutParams(w, h, xpos, ypos, _type, _flags, _format);
+        windowParams.gravity = Gravity.TOP | Gravity.LEFT;
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
-        windowManager.addView(floatWindowBinding.getRoot(), layoutParams);
+        windowManager.addView(floatWindowBinding.getRoot(), windowParams);
 
         floatWindowBinding.getRoot().setOnTouchListener(new View.OnTouchListener() {
             private float xCoordinate, yCoordinate;
@@ -163,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         startClickTime = Calendar.getInstance().getTimeInMillis();
-                        xCoordinate = view.getX() - event.getRawX();
-                        yCoordinate = view.getY() - event.getRawY();
+                        xCoordinate = windowParams.x - event.getRawX();
+                        yCoordinate = windowParams.y - event.getRawY();
                         break;
                     case MotionEvent.ACTION_UP:
                         long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
@@ -186,13 +192,15 @@ public class MainActivity extends AppCompatActivity {
                                 if (toothBinding.getRoot().getVisibility() == View.GONE) {
                                     toothBinding.getRoot().setVisibility(View.VISIBLE);
                                 } else {
-                                    windowManager.addView(toothBinding.getRoot(), layoutParams);
+                                    windowManager.addView(toothBinding.getRoot(), windowParams);
                                 }
                             }
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();
+                        windowParams.x = (int) (event.getRawX() + xCoordinate);
+                        windowParams.y = (int) (event.getRawY() + yCoordinate);
+                        windowManager.updateViewLayout(view, windowParams);
                         break;
                 }
                 return true;
