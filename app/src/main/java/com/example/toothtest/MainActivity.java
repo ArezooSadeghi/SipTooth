@@ -19,16 +19,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.example.toothtest.databinding.ActivityMainBinding;
-import com.example.toothtest.databinding.FloatWindowBinding;
-import com.example.toothtest.databinding.ToothBinding;
+import com.example.toothtest.databinding.FloatWindowOneBinding;
+import com.example.toothtest.databinding.FloatWindowTwoBinding;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private WindowManager windowManager;
-    private FloatWindowBinding floatWindowBinding;
-    private ToothBinding toothBinding;
+    private FloatWindowOneBinding floatWindowBinding;
+    private FloatWindowTwoBinding toothBinding;
     private WindowManager.LayoutParams windowParams;
     private static int TYPE;
 
@@ -132,13 +132,13 @@ public class MainActivity extends AppCompatActivity {
 
         floatWindowBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(this),
-                R.layout.float_window,
+                R.layout.float_window_one,
                 null,
                 false);
 
         toothBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(this),
-                R.layout.tooth,
+                R.layout.float_window_two,
                 null,
                 false);
 
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                         yCoordinate = view.getY() - event.getRawY();
                         break;
                     case MotionEvent.ACTION_UP:
-                        long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
+                      /*  long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                         if (clickDuration < MAX_CLICK_DURATION) {
                             int[] locationClose = new int[2];
                             toothBinding.ivClose.getLocationOnScreen(locationClose);
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                                 toothBinding.getRoot().setVisibility(View.GONE);
                                 floatWindowBinding.getRoot().setVisibility(View.VISIBLE);
                             }
-                        }
+                        }*/
                         break;
                     case MotionEvent.ACTION_MOVE:
                         view.animate().x(event.getRawX() + xCoordinate).y(event.getRawY() + yCoordinate).setDuration(0).start();
